@@ -1,5 +1,6 @@
 package com.ticketsystem.ticket_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ticket {
 
     @Id
@@ -37,12 +39,12 @@ public class Ticket {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by")
-    @JsonIgnoreProperties({"password", "roles"})
+    @JsonIgnoreProperties({"password", "roles", "hibernateLazyInitializer", "handler"})
     private User createdBy;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assigned_to")
-    @JsonIgnoreProperties({"password", "roles"})
+    @JsonIgnoreProperties({"password", "roles", "hibernateLazyInitializer", "handler"})
     private User assignedTo;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)

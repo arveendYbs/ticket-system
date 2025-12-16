@@ -59,14 +59,25 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tickets/**").authenticated()
+                        // TICKETS
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/tickets",
+                                "/api/tickets/**"
+                        ).hasAnyRole("ADMIN", "MANAGER", "AGENT", "EMPLOYEE")
                         .requestMatchers(HttpMethod.POST, "/api/tickets/**").hasAnyRole("ADMIN", "MANAGER", "AGENT", "EMPLOYEE")
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/**").hasAnyRole("ADMIN", "MANAGER", "AGENT")
                         .requestMatchers(HttpMethod.DELETE, "/api/tickets/**").hasAnyRole("ADMIN", "MANAGER")
+
+                        // Users
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "MANAGER")
+
+                        // Attachments
                         .requestMatchers("/api/attachments/**").authenticated()
+                        .requestMatchers("/error").permitAll()
+
                         .anyRequest().authenticated()
                 )
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -76,7 +87,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
